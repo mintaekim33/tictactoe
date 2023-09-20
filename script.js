@@ -8,9 +8,9 @@ for (let i = 0; i < 9; i++) {
 
 // constants
 const colors = {
-    "null": "white",
-    "1": "green",
-    "-1": "blue"
+    'null': 'white',
+    '1': 'green',
+    '-1': 'blue'
 };
 
 const winningCombo = [
@@ -25,12 +25,9 @@ const winningCombo = [
 ];
 
 // state variables
-let boardArray = [null,null,null,null,null,null,null,null,null];
-let turn = 1;
-let winner = 'Playing';
+let boardArray, turn, winner;
 
 // cached elements
-// const cell = document.querySelector('.cell');
 const cells = Array.from(document.querySelectorAll('.cell')); // or [...document.querySelectorAll('.cell')];
 const resetBtn = document.querySelector('.resetBtn');
 
@@ -42,27 +39,33 @@ function initialize() {
     // renderBoard();
 }
 
-function renderBoard() {
+function renderBoard(e) {
     boardArray.forEach((cell, cellIdx) => {
-            boardArray[cellIdx].style.backgroundColor = colors[1];
+            // boardArray[cellIdx].style.backgroundColor = colors[1];
+            e.target.style.backgroundColor = colors[turn];
+            // console.log(e.target)
         })
 }
 
 function renderMessage() {
-    if (winner !== null) {
-        console.log(colors[1].toUpperCase());
+    console.log(winner)
+    if (winner !== null ) {
+        console.log(colors[turn].toUpperCase());
     } else if (winner == 'T') {
         console.log('Tie');
     } else {
-        console.log(`Congrats ${colors[1].toUpperCase()}!`);
+        console.log(`Congrats ${colors[turn].toUpperCase()}!`);
     }
 }
 
 board.addEventListener('click', handleCellClick);
 
 function handleCellClick(e) {
+    // e.target.style.backgroundColor = 'blue';
     const selectedCell = e.target;
     // console.log(e);
+
+    winner = 'Playing';
 
     const indexOfClickedCell = cells.indexOf(selectedCell);
     console.log(indexOfClickedCell);
@@ -73,9 +76,10 @@ function handleCellClick(e) {
 
     // console.log(boardArray)
     if (boardArray[indexOfClickedCell] !== null) return;
-    if (winner !== null) return; // could be playing?
+    if (winner !== null && winner !== 'Playing') return; // could be playing?
 
     boardArray[indexOfClickedCell] = turn;
+    // console.log(boardArray[indexOfClickedCell])
 
     turn = turn * -1
 
@@ -91,16 +95,18 @@ function handleCellClick(e) {
         // if there is no winner and there are no more nulls in the board
         if (boardArray.indexOf(null) < 0) winner = 'T';
     })
-    renderBoard();
+    renderBoard(e);
     renderMessage();
 }
 
 resetBtn.addEventListener('click', handleReplayClick);
 
 function handleReplayClick(e) {
-    const reset = e.target;
-    console.log(reset)
-    // initialize();
-    // renderBoard();
-    // renderMessage();
+    // const reset = e.target;
+    // console.log(reset)
+    initialize();
+    renderBoard(e);
+    renderMessage();
 }
+
+initialize();
