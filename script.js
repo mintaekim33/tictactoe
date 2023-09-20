@@ -33,10 +33,11 @@ const resetBtn = document.querySelector('.resetBtn');
 
 // functions
 function initialize() {
-    boardArray = [null,null,null,null,null,null,null,null,null]; //splice to update?
-    turn = 1;
+    boardArray = [null,null,null,null,null,null,null,null,null]; //splice to update? -from yy
+    turn = -1;
     winner = null;
-    // renderBoard();
+    renderBoard();
+    renderMessage();
 }
 
 function renderBoard(e) {
@@ -48,9 +49,9 @@ function renderBoard(e) {
 }
 
 function renderMessage() {
-    console.log(winner)
-    if (winner !== null ) {
-        console.log(colors[turn].toUpperCase());
+    console.log('who won/tie/in play - ', winner)
+    if (winner !== null && winner === 'Playing') {
+        console.log('whose turn:', colors[turn].toUpperCase());
     } else if (winner == 'T') {
         console.log('Tie');
     } else {
@@ -64,11 +65,10 @@ function handleCellClick(e) {
     // e.target.style.backgroundColor = 'blue';
     const selectedCell = e.target;
     // console.log(e);
-
     winner = 'Playing';
 
     const indexOfClickedCell = cells.indexOf(selectedCell);
-    console.log(indexOfClickedCell);
+    // console.log(indexOfClickedCell);
     // OR
     // cells.forEach((cell, idx) => {
     //     if (cell === selectedCell) console.log(idx);
@@ -78,19 +78,26 @@ function handleCellClick(e) {
     if (boardArray[indexOfClickedCell] !== null) return;
     if (winner !== null && winner !== 'Playing') return; // could be playing?
 
+    // update board
     boardArray[indexOfClickedCell] = turn;
     // console.log(boardArray[indexOfClickedCell])
 
-    turn = turn * -1
+    // update turn
+console.log('before:', turn);
+turn = turn * -1
+console.log('after:', turn);
 
+    // update winner
+    // winner = checkWinner();
     winningCombo.forEach(combo => {
+    // for (let combo of winningCombo) {
         // 3 board positions using the winning indices
         let total = boardArray[combo[0]] + boardArray[combo[1]] + boardArray[combo[2]];
         // find absolute value of total
         if (total < 0) total *= -1;
         if (total === 3) {
             winner = boardArray[combo[0]];
-            return; // or break?
+            return winner; // or break?
         }
         // if there is no winner and there are no more nulls in the board
         if (boardArray.indexOf(null) < 0) winner = 'T';
@@ -99,14 +106,40 @@ function handleCellClick(e) {
     renderMessage();
 }
 
+// STOP when game is over!
+
+// function checkWinner() {
+//     // winningCombo.forEach(combo => {
+//         for (let combo of winningCombo) {
+//             // 3 board positions using the winning indices
+//             let total = boardArray[combo[0]] + boardArray[combo[1]] + boardArray[combo[2]];
+//             // find absolute value of total
+//             if (total < 0) total *= -1;
+//             if (total === 3) {
+//                 return boardArray[combo[0]];
+//             }
+//             // if there is no winner and there are no more nulls in the board
+//             if (boardArray.indexOf(null) < 0) return 'T';
+//             // if there are null cells, still playing
+//             // if (boardArray.includes(null)) return null;
+//         }
+// }
+
 resetBtn.addEventListener('click', handleReplayClick);
 
 function handleReplayClick(e) {
     // const reset = e.target;
     // console.log(reset)
+    clearBoard();
     initialize();
     renderBoard(e);
     renderMessage();
+}
+
+function clearBoard() {
+    cells.forEach(cell => {
+        cell.style.backgroundColor = '';
+    })
 }
 
 initialize();
