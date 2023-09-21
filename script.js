@@ -3,12 +3,13 @@ let board = document.getElementById('board');
 for (let i = 0; i < 9; i++) {
     let cell = document.createElement('div');
     cell.classList.add('cell');
+    cell.setAttribute('id', `cell-${i}`)
     board.appendChild(cell);
 }
 
 // constants
 const colors = {
-    'null': 'white',
+    'null': 'antiquewhite',
     '1': 'green',
     '-1': 'blue'
 };
@@ -26,90 +27,107 @@ const winningCombo = [
 
 // state variables
 let boardArray, turn, winner;
+// flag = won/lost
 
 // cached elements
 const cells = Array.from(document.querySelectorAll('.cell')); // or [...document.querySelectorAll('.cell')];
 const resetBtn = document.querySelector('.resetBtn');
+const message = document.querySelector('.message');
 
 // functions
 function initialize() {
     boardArray = [null,null,null,null,null,null,null,null,null]; //splice to update? -from yy
-    turn = -1;
+    turn = 1;
     winner = null;
-    renderBoard();
+    // add the event listener back after removing
+    board.addEventListener('click', handleCellClick);
     renderMessage();
+    renderBoard();
 }
 
-function renderBoard(e) {
+function renderBoard() {
     boardArray.forEach((cell, cellIdx) => {
+        // console.log(boardArray)
             // boardArray[cellIdx].style.backgroundColor = colors[1];
-            // boardArray[cellIdx].style.backgroundColor = colors[cell]; - try this
-            e.target.style.backgroundColor = colors[turn];
-            // console.log(e.target)
+            // const cellElement = boardArray[boardArray.indexOf[e.target]]
+            const cellElement = document.getElementById(`cell-${cellIdx}`);
+            // console.log(cellElement)
+            cellElement.style.backgroundColor = colors[cell];
+            // e.target.style.backgroundColor = colors[turn];
         })
 }
 
 function renderMessage() {
-    console.log('who won/tie/in play - ', winner)
-    if (winner !== null && winner === 'Playing') {
-        console.log('whose turn:', colors[turn].toUpperCase());
-    } else if (winner == 'T') {
-        console.log('Tie');
-    } else {
-        console.log(`Congrats ${colors[turn].toUpperCase()}!`);
-    }
+    // if (winner === null) {
+    //     console.log('whose turn:', colors[turn].toUpperCase());
+    // } else if (winner === 'T') {
+    //     console.log('Tie');
+    // } else {
+    //     console.log(`Congrats ${colors[turn].toUpperCase()}!`);
+    // }
+
+    if (winner === null) message.innerHTML = `${colors[turn].toUpperCase()}'s Turn!`;
+    else if (winner === 'T') message.innerHTML = "It's a tie";
+    else { message.innerHTML = `Congrats, ${colors[turn].toUpperCase()}! You won!`};
+    // if (winner === 'T') console.log("TIE");
+    // else if (winner) console.log(`Congrats, ${colors[turn].toUpperCase()}! You won!`);
+    // else {console.log(`${colors[turn].toUpperCase()}'s Turn!`)};
 }
 
 board.addEventListener('click', handleCellClick);
 
 function handleCellClick(e) {
-    // e.target.style.backgroundColor = 'blue';
     const selectedCell = e.target;
-    // console.log(e);
-    winner = 'Playing';
-
     const indexOfClickedCell = cells.indexOf(selectedCell);
-    // console.log(indexOfClickedCell);
     // OR
     // cells.forEach((cell, idx) => {
     //     if (cell === selectedCell) console.log(idx);
     // })
 
-    // console.log(boardArray)
     if (boardArray[indexOfClickedCell] !== null) return;
-    if (winner !== null && winner !== 'Playing') return; // could be playing?
+    if (winner !== null) return; 
 
     // update board
     boardArray[indexOfClickedCell] = turn;
-    // console.log(boardArray[indexOfClickedCell])
 
-    // update turn
-console.log('before:', turn);
-turn = turn * -1
-console.log('after:', turn);
+    // renderBoard(e);
 
     // update winner
+    renderBoard();
+    renderMessage();
     // winner = checkWinner();
-    // winningCombo.forEach(combo => {
+
+
     for (let combo of winningCombo) {
+        
         // 3 board positions using the winning indices
         let total = boardArray[combo[0]] + boardArray[combo[1]] + boardArray[combo[2]];
 
         // find absolute value of total
-console.log(total)
         if (total < 0) total *= -1;
-console.log(total)
-
         if (total === 3) {
             winner = boardArray[combo[0]];
-            return; // or break?
+            // remove listener to stop the game
+            board.removeEventListener('click', handleCellClick);
+            renderMessage();
+            return; 
         }
         // if there is no winner and there are no more nulls in the board
         if (boardArray.indexOf(null) < 0) winner = 'T';
+        // if (boardArray.includes(null)) winner = null;
     }
 
-    renderBoard(e);
-    renderMessage();
+        // update turn
+        turn = turn * -1
+
+        // check win state
+        // if (winner) {
+        //     board.removeEventListener('click', handleCellClick);
+        // }
+
+    // renderBoard();
+    // renderMessage();
+    // // if (winner) board.removeEventListener('click', handleCellClick);
 }
 
 // STOP when game is over!
@@ -121,6 +139,7 @@ console.log(total)
 //             // find absolute value of total
 //             if (total < 0) total *= -1;
 //             if (total === 3) {
+//                 board.removeEventListener('click', handleCellClick);
 //                 return boardArray[combo[0]];
 //             }
 //             // if there is no winner and there are no more nulls in the board
@@ -132,13 +151,13 @@ console.log(total)
 
 resetBtn.addEventListener('click', handleReplayClick);
 
-function handleReplayClick(e) {
+function handleReplayClick() {
     // const reset = e.target;
     // console.log(reset)
     clearBoard();
     initialize();
-    renderBoard(e);
     renderMessage();
+    renderBoard();
 }
 
 function clearBoard() {
