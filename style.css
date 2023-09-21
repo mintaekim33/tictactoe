@@ -8,10 +8,12 @@
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr;
     gap: 1px;
+    visibility: hidden;
 }
 
 .cell {
     border: 1px solid black;
+    visibility: hidden;
 }
 
 .resetBtn {
@@ -21,4 +23,5 @@
     padding: 10px 5px;
     border-radius: 10px;
     background-color: yellowgreen;
+    visibility: hidden;
 }
