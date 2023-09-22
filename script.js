@@ -34,7 +34,6 @@ const resetBtn = document.querySelector('.resetBtn');
 const message = document.querySelector('.message');
 
 // Functions
-
 // Initialize state variables
 function initialize() {
     boardArray = [null,null,null,null,null,null,null,null,null];
@@ -42,8 +41,8 @@ function initialize() {
     winner = null;
     // Add the event listener back after removing
     board.addEventListener('click', handleCellClick);
-    renderMessage();
     renderBoard();
+    renderMessage();
 }
 
 // Update the board display
@@ -59,14 +58,6 @@ function renderBoard() {
 
 // Update the message display
 function renderMessage() {
-    // if (winner === null) {
-    //     console.log('whose turn:', colors[turn].toUpperCase());
-    // } else if (winner === 'T') {
-    //     console.log('Tie');
-    // } else {
-    //     console.log(`Congrats ${colors[turn].toUpperCase()}!`);
-    // }
-
     if (winner === null) message.innerHTML = `${colors[turn].toUpperCase()}'s Turn!`;
     else if (winner === 'T') message.innerHTML = "It's a tie";
     else { message.innerHTML = `Congrats, ${colors[turn].toUpperCase()}! You won!`};
@@ -75,6 +66,7 @@ function renderMessage() {
 // Add click event listener when the user clicks on a cell
 board.addEventListener('click', handleCellClick);
 function handleCellClick(e) {
+    console.log(turn)
     const selectedCell = e.target;
     const indexOfClickedCell = cells.indexOf(selectedCell);
     // OR
@@ -114,7 +106,10 @@ function handleCellClick(e) {
     }
 
         // Swap turns
-        turn = turn * -1
+        turn = turn * -1;
+        
+        // Update message display
+        renderMessage();
 }
 
 // Add click event listener for the reset button
@@ -124,8 +119,8 @@ resetBtn.addEventListener('click', handleReplayClick);
 function handleReplayClick() {
     clearBoard();
     initialize();
-    renderMessage();
     renderBoard();
+    renderMessage();
 }
 
 // Clear the colors in the board
